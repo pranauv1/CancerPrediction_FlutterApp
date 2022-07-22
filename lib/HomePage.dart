@@ -145,7 +145,9 @@ class _HomePageState extends State<HomePage> {
                                   ? scanningBrain
                                       ? "Tumor Detected !"
                                       : "Cancer Detected !"
-                                  : "No Cancer Detected !",
+                                  : scanningBrain
+                                      ? "No Tumor Detected !"
+                                      : "No Cancer Detected !",
                               style: const TextStyle(
                                   fontSize: 18.0, fontWeight: FontWeight.w700),
                             ),
