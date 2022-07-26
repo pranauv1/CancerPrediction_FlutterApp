@@ -662,7 +662,7 @@ class _HomePageState extends State<HomePage> {
       path: imageFile.path,
       numResults: expectedResultNumber,
     ).then((pred) {
-      //Depending on the predicted model, get the short desc about cancer from AboutCancers.dart
+      //Depending on the predicted label, get the short desc about cancer from AboutCancers.dart
       switch (pred!.first['label']) {
         case 'Glioma Tumor':
           setState(() {
