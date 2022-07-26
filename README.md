@@ -1,16 +1,7 @@
-# cancer_prediction
+# CancerPrediction_FlutterApp
+Flutter app based on two CNN models to predict brain tumor and skin cancer.
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Brain tumor model building and training can be found here -> https://github.com/pranauv1/Brain_Tumor_Classification
+<br>Skin cancer model building and training can be found here -> https://github.com/pranauv1/Skin_Cancer
+<br><br>
+The models above are not good with real world predictions as the training data set is obtained from Kaggle competiotions. (Images need to be manually modified before prediction)
