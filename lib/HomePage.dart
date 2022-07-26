@@ -14,11 +14,13 @@ class HomePage extends StatefulWidget {
 }
 
 bool isImageLoaded = false;
+//Defins if user is picking the brainTumor model
 bool scanningBrain = true;
 bool isCancerDetected = true;
 bool isLoading = false;
 // ignore: prefer_typing_uninitialized_variables
 var imageFile;
+//Details returned by AI
 double confidence = 0.00;
 String label = '';
 String cancerDesc = '';
@@ -84,6 +86,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  //The Bottom Container > which contains the details after uploading images
   displayDetailsAfterImageLoaded(devWidth, devHeight) {
     return WillPopScope(
       onWillPop: () async {
@@ -115,16 +118,13 @@ class _HomePageState extends State<HomePage> {
                         ),
                       )),
                 )
-              :
-              //The Bottom Container > which contains the details after uploading images
-              Container(
+              : Container(
                   constraints: BoxConstraints(
                     maxWidth: devWidth * 0.96,
                     minHeight: devHeight * 0.55,
                   ),
                   decoration: BoxDecoration(
                     color: isCancerDetected
-                        // ignore: dead_code
                         ? const Color.fromARGB(255, 250, 222, 222)
                         : const Color.fromARGB(255, 224, 250, 222),
                     borderRadius: const BorderRadius.only(
@@ -141,7 +141,6 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Text(
                               isCancerDetected
-                                  // ignore: dead_code
                                   ? scanningBrain
                                       ? "Tumor Detected !"
                                       : "Cancer Detected !"
@@ -153,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                             InkWell(
                               onTap: () async {
-                                //Clear Image
+                                //User tapped on clear button
                                 setState(() {
                                   isImageLoaded = false;
                                   isCancerDetected = false;
@@ -224,7 +223,6 @@ class _HomePageState extends State<HomePage> {
                             )
                           : const SizedBox(),
                       isCancerDetected
-                          // ignore: dead_code
                           ? Text(
                               label,
                               style: const TextStyle(
@@ -295,6 +293,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  //The Bottom Container > which contains the details before uploading images
   displayDetailsBeforeImageLoaded(devWidth, devHeight) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -322,9 +321,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     )),
               )
-            :
-            //The Bottom Container > which contains the details before uploading images
-            Container(
+            : Container(
                 constraints: BoxConstraints(
                   maxWidth: devWidth * 0.96,
                   minHeight: devHeight * 0.55,
@@ -473,6 +470,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+//Pick or capture an image PopUp
   letUserPickAnImage() {
     double devHeight = MediaQuery.of(context).size.height;
     double devWidth = MediaQuery.of(context).size.width;
@@ -585,6 +583,7 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
+//Get Image > ImagePicker
   _getImage(source) async {
     XFile? xFile = await ImagePicker()
         .pickImage(source: source, preferredCameraDevice: CameraDevice.rear);
@@ -609,6 +608,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+//Snackbar
   _displaySnackBar(contextThis, message, isError) {
     ScaffoldMessenger.of(contextThis).showSnackBar(SnackBar(
       content: Row(
@@ -638,26 +638,31 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
+//Using the AI models
   startPredicting() async {
     setState(() {
       isLoading = true;
     });
+    //Expected outputs (internel param)
     int expectedResultNumber;
     if (scanningBrain) {
+      //If user tapped on brainTumor
       expectedResultNumber = 4;
       await Tflite.loadModel(
           model: 'assets/brainTumor.tflite', labels: 'assets/brainLabels.txt');
     } else {
+      //If user tapped on skinCance
       expectedResultNumber = 7;
       await Tflite.loadModel(
           model: 'assets/skinCancer.tflite', labels: 'assets/skinLabels.txt');
     }
 
+//Prediction
     await Tflite.runModelOnImage(
       path: imageFile.path,
       numResults: expectedResultNumber,
     ).then((pred) {
-      //print(pred);
+      //Depending on the predicted model, get the short desc about cancer from AboutCancers.dart
       switch (pred!.first['label']) {
         case 'Glioma Tumor':
           setState(() {
@@ -710,21 +715,26 @@ class _HomePageState extends State<HomePage> {
           });
           break;
       }
+      //Then assign values so that UI will be updated
       setState(() {
         confidence = pred.first['confidence'] * 100;
         label = pred.first['label'];
         if (confidence < 20.0) {
+          //Incase if the model is not confident(<20%) will say no cancers found!
           isCancerDetected = false;
         } else {
           if (label == 'No Tumor') {
+            //If model found that there is no cancers, will say no cancers found!
             isCancerDetected = false;
           } else {
+            //If model found that there is cancers, will say cancers found!
             isCancerDetected = true;
           }
         }
         isLoading = false;
       });
     }).catchError((e) {
+      //Handling error with model > Tflite
       // ignore: avoid_print
       print("error while predicting: $e");
       setState(() {
